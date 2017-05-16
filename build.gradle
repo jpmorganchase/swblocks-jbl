@@ -132,6 +132,38 @@ artifacts {
     testArtifacts testJar
 }
 
+def projectPom = {
+    description = 'SWBlocks (Software Blocks) Java Base Library'
+
+    issueManagement {
+        system 'GitHub'
+        url 'https://github.com/jpmorganchase/swblocks-jbl/issues'
+    }
+    scm {
+        connection 'scm:git:https://github.com/jpmorganchase/swblocks-jbl.git'
+        developerConnection 'scm:git:https://github.com/jpmorganchase/swblocks-jbl.git'
+        url 'https://github.com/jpmorganchase/swblocks-jbl.git'
+    }
+    licenses {
+        license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        }
+    }
+    developers {
+        developer {
+            id 'lazar-ivanov'
+            name 'Lazar Ivanov'
+            url 'https://github.com/lazar-ivanov'
+        }
+        developer {
+            id 'logicrunner'
+            name 'James Winnifrith'
+            url 'https://github.com/LogicRunner'
+        }
+    }
+}
+
 publishing {
     repositories {
         maven {
@@ -149,7 +181,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             pom.withXml {
-                asNode().appendNode('description', 'SWBlocks (Software Blocks) Java Base Library')
+                asNode().children().last()+projectPom
             }
             groupId "${mavenGroup}"
             artifactId 'jbl'
