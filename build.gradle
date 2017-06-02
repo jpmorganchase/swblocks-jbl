@@ -133,7 +133,8 @@ artifacts {
 }
 
 def projectPom = {
-    description = 'SWBlocks (Software Blocks) Java Base Library'
+    name 'SWBlocks-JBL'
+    url 'https://github.com/jpmorganchase/swblocks-jbl'
 
     issueManagement {
         system 'GitHub'
@@ -181,6 +182,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             pom.withXml {
+                asNode().appendNode('description', 'Software Blocks Java Base Library')
                 asNode().children().last()+projectPom
             }
             groupId "${mavenGroup}"
