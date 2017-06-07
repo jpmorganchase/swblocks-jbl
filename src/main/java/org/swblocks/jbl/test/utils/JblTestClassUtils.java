@@ -47,6 +47,7 @@ public class JblTestClassUtils {
      */
     public static boolean assertConstructorIsPrivate(final Class clazz) {
         return EhSupport.propagateFn(() -> {
+            @SuppressWarnings("unchecked")
             final Constructor constructor = clazz.getDeclaredConstructor();
             final boolean isPrivate = Modifier.isPrivate(constructor.getModifiers());
             constructor.setAccessible(true);

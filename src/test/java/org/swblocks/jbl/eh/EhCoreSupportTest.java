@@ -28,6 +28,7 @@ import org.swblocks.jbl.util.MutableObject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -455,6 +456,50 @@ public class EhCoreSupportTest {
     public class SuppressNotEnabledException extends RuntimeException {
         SuppressNotEnabledException(final String message) {
             super(message, null /* cause */, false /* enableSuppression */, true /* writableStackTrace */);
+        }
+    }
+
+    @Test
+    public void uncaughtExceptionHandler() {
+        try {
+            final Thread.UncaughtExceptionHandler defaultUncaughtHandler = EhCoreSupport.getDefaultUncaughtHandler();
+            assertNotNull(defaultUncaughtHandler);
+
+            final Thread.UncaughtExceptionHandler uncaughtHandler = EhCoreSupport.getUncaughtHandler();
+            assertNotNull(uncaughtHandler);
+
+            assertSame(defaultUncaughtHandler, uncaughtHandler);
+
+            final MutableObject<Boolean> invoked = new MutableObject<>(Boolean.FALSE);
+            final String message = "Test uncaught handler exception message";
+
+            final Thread.UncaughtExceptionHandler newHandler = (thread, exception) -> {
+                assertSame(exception.getClass(), IllegalStateException.class);
+                assertSame(exception.getMessage(), message);
+                invoked.setValue(Boolean.TRUE);
+            };
+
+            EhCoreSupport.setUncaughtHandler(newHandler);
+            assertSame(newHandler, EhCoreSupport.getUncaughtHandler());
+
+            EhCoreSupport.propagate(() -> {
+                final Thread thread = new Thread(() -> EhSupport.throwEnhanced(new IllegalStateException(message)));
+                thread.start();
+                thread.join();
+            });
+
+            assertEquals(invoked.getValue(), Boolean.TRUE);
+
+            assertSame(newHandler, EhCoreSupport.getUncaughtHandler());
+            EhCoreSupport.setUncaughtHandler(defaultUncaughtHandler);
+            assertSame(defaultUncaughtHandler, EhCoreSupport.getUncaughtHandler());
+            EhCoreSupport.setUncaughtHandler(null);
+            assertSame(defaultUncaughtHandler, EhCoreSupport.getUncaughtHandler());
+        } finally {
+            /**
+             * Make sure to restore the default handler no matter what happens
+             */
+            EhCoreSupport.setUncaughtHandler(null);
         }
     }
 }
