@@ -67,6 +67,7 @@ public final class ComponentLoaderUtils {
             }
 
             final Class clazz = urlClassLoader.loadClass(className);
+            @SuppressWarnings("unchecked")
             final Object object = clazz.getConstructor().newInstance();
             if (object instanceof ComponentLifecycle) {
                 return (ComponentLifecycle) object;

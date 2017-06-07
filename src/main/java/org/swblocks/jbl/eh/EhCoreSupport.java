@@ -38,6 +38,22 @@ class EhCoreSupport {
      */
     protected static Consumer<Throwable> throwHandler = EhCoreSupport::<RuntimeException>rethrowInternal;
 
+    protected static final Thread.UncaughtExceptionHandler defaultUncaughtHandler = (thread, exception) -> {
+        System.err.print("Uncaught exception in thread \"" + thread.getName() + "\" ");
+        exception.printStackTrace(System.err);
+        Runtime.getRuntime().halt(1);
+    };
+
+    protected static Thread.UncaughtExceptionHandler uncaughtHandler = defaultUncaughtHandler;
+
+    private static final Thread.UncaughtExceptionHandler uncaughtHandlerLocalCallback =
+            (thread, exception) -> uncaughtHandler.uncaughtException(thread, exception);
+
+    static {
+        Thread.setDefaultUncaughtExceptionHandler(uncaughtHandlerLocalCallback);
+        Thread.currentThread().setUncaughtExceptionHandler(uncaughtHandlerLocalCallback);
+    }
+
     /*
      * Consumers of JBL can provide an implementation of this handler
      * that logs the exception details and then terminates the application
@@ -55,6 +71,7 @@ class EhCoreSupport {
     protected EhCoreSupport() {
     }
 
+    @SuppressWarnings("unchecked")
     protected static <T extends Throwable> void rethrowInternal(final Throwable throwable) throws T {
         throw (T) throwable;
     }
@@ -361,5 +378,34 @@ class EhCoreSupport {
      */
     public static void closeQuietlyOrException(final Throwable throwable, final Closeable closeable) {
         closeQuietlyOrFatal(throwable, closeable, Closeable::close);
+    }
+
+    /**
+     * Obtains the default uncaught exception handler, which usually prints the stacktrace and terminates the VM
+     * with {@link Runtime#halt} - by calling Runtime.getRuntime().halt(1)
+     *
+     * @return The default uncaught exception handler
+     */
+    public static Thread.UncaughtExceptionHandler getDefaultUncaughtHandler() {
+        return defaultUncaughtHandler;
+    }
+
+    /**
+     * Obtains the currently installed uncaught exception handler, which if
+     * {@link #setUncaughtHandler(Thread.UncaughtExceptionHandler)} is never called is typically the default handler
+     * {@link #getDefaultUncaughtHandler()}
+     *
+     * @return The currently installed uncaught exception handler
+     */
+    public static Thread.UncaughtExceptionHandler getUncaughtHandler() {
+        return uncaughtHandler;
+    }
+
+    /**
+     * Sets new uncaught exception handler. Typically it is expected to execute only very simple and safe code and
+     * then terminate the VM and if null it provided it installs the default such {@link #getDefaultUncaughtHandler()}
+     */
+    public static void setUncaughtHandler(final Thread.UncaughtExceptionHandler uncaughtHandler) {
+        EhCoreSupport.uncaughtHandler = (null == uncaughtHandler ? defaultUncaughtHandler : uncaughtHandler);
     }
 }

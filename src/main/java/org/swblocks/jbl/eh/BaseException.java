@@ -125,6 +125,7 @@ public class BaseException extends RuntimeException {
      * @param value The value of the property. If value is null all properties associated with that property name will
      *              be removed.
      */
+    @SuppressWarnings("unchecked")
     public void putProperty(final String name, final Object value) {
         EhCoreSupport.ensureOrFatal(name != null && !name.isEmpty(), "The parameter 'name' cannot be null or empty");
 
@@ -166,6 +167,7 @@ public class BaseException extends RuntimeException {
      * @param <E>  The expected type
      * @return The property value
      */
+    @SuppressWarnings("unchecked")
     public <E> E tryGetProperty(final String name) {
         final Object value = this.properties.getOrDefault(name, null);
 
