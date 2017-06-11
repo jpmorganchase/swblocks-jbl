@@ -16,10 +16,8 @@
 
 package org.swblocks.jbl.tasks;
 
-import java.io.Closeable;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 /**
  * The basic thread pool interface.
@@ -29,7 +27,7 @@ import java.util.concurrent.Future;
  *
  * <p>The thread pool designated to execute CPU bound operations and async callbacks can be regular fixed size thread
  * pool (GeneralPurpose) or work stealing queue thread pool (WorkStealing) and all 3 types of thread pools are also
- * global singletons which can be acquired via get
+ * global singletons which can be acquired via {@link #getInstance(ThreadPoolId)}
  */
 
 public interface ThreadPool {
@@ -79,6 +77,6 @@ public interface ThreadPool {
      * @return Thread pool instance
      */
     static ThreadPool getInstance(final ThreadPoolId threadPoolId) {
-        return ThreadPoolImpl.getInstance(threadPoolId);
+        return DefaultThreadPool.getInstance(threadPoolId);
     }
 }

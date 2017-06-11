@@ -33,14 +33,14 @@ import org.swblocks.jbl.eh.EhSupport;
  * <p>The thread pool that handles actual CPU bound tasks can be regular thread pool or work stealing queue pool (i.e.
  * fork-join thread pool)
  */
-public class ThreadPoolImpl implements ThreadPool {
+public class DefaultThreadPool implements ThreadPool {
     private static final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
 
     private final ThreadPoolId id;
     private ExecutorService executorService;
     private AsynchronousChannelGroup ioService;
 
-    private ThreadPoolImpl(final int numberOfThreads, final ThreadPoolId id) {
+    private DefaultThreadPool(final int numberOfThreads, final ThreadPoolId id) {
         this.id = id;
 
         if (ThreadPoolId.WorkStealing == id) {
@@ -121,20 +121,20 @@ public class ThreadPoolImpl implements ThreadPool {
 
     private static class LazyInitializerGeneralPurpose {
         private static final int NUMBER_OF_THREADS_DEFAULT = 32;
-        private static final ThreadPool g_instance =
-                new ThreadPoolImpl(NUMBER_OF_THREADS_DEFAULT, ThreadPoolId.GeneralPurpose);
+        private static final ThreadPool instance =
+                new DefaultThreadPool(NUMBER_OF_THREADS_DEFAULT, ThreadPoolId.GeneralPurpose);
     }
 
     private static class LazyInitializerWorkStealing {
         private static final int PARALLELISM_LEVEL_DEFAULT = Runtime.getRuntime().availableProcessors();
-        private static final ThreadPool g_instance =
-                new ThreadPoolImpl(PARALLELISM_LEVEL_DEFAULT, ThreadPoolId.WorkStealing);
+        private static final ThreadPool instance =
+                new DefaultThreadPool(PARALLELISM_LEVEL_DEFAULT, ThreadPoolId.WorkStealing);
     }
 
     private static class LazyInitializerNonBlocking {
         private static final int NUMBER_OF_THREADS_NON_BLOCKING = 8;
-        private static final ThreadPool g_instance =
-                new ThreadPoolImpl(NUMBER_OF_THREADS_NON_BLOCKING, ThreadPoolId.NonBlocking);
+        private static final ThreadPool instance =
+                new DefaultThreadPool(NUMBER_OF_THREADS_NON_BLOCKING, ThreadPoolId.NonBlocking);
     }
 
     /**
@@ -144,11 +144,11 @@ public class ThreadPoolImpl implements ThreadPool {
         return EhSupport.propagateFn(() -> {
             switch (threadPoolId) {
                 case GeneralPurpose:
-                    return LazyInitializerGeneralPurpose.g_instance;
+                    return LazyInitializerGeneralPurpose.instance;
                 case WorkStealing:
-                    return LazyInitializerWorkStealing.g_instance;
+                    return LazyInitializerWorkStealing.instance;
                 case NonBlocking:
-                    return LazyInitializerNonBlocking.g_instance;
+                    return LazyInitializerNonBlocking.instance;
                 default:
                     throw EhSupport.enhance(new IllegalStateException(
                             String.format("The requested thread pool id {} is not supported", threadPoolId)));
