@@ -265,7 +265,7 @@ public class EhCoreSupportTest {
                 throwable -> {
                     assertNotNull(throwable);
                     assertTrue(throwable instanceof IllegalStateException);
-                    assertEquals(throwable.getMessage(), "Test");
+                    assertEquals("Test", throwable.getMessage());
                 });
     }
 
@@ -281,17 +281,17 @@ public class EhCoreSupportTest {
             EhCoreSupport.rethrow(new IllegalStateException("Test"));
             return 42L;
         }, throwable -> {
-                assertNotNull(throwable);
-                assertTrue(throwable instanceof IllegalStateException);
-                assertEquals(throwable.getMessage(), "Test");
-            });
+            assertNotNull(throwable);
+            assertTrue(throwable instanceof IllegalStateException);
+            assertEquals("Test", throwable.getMessage());
+        });
     }
 
     @Test
     public void enhancedFinallyFnWithoutException() {
         final Long longValue = EhCoreSupport.enhancedFinallyFn(() -> 42L,
                 Assert::assertNull);
-        assertEquals(longValue, (Long) 42L);
+        assertEquals((Long) 42L, longValue);
     }
 
     @Test
@@ -299,9 +299,9 @@ public class EhCoreSupportTest {
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.trySuppressExceptions(throwable, () -> EhCoreSupport.rethrow(new IllegalStateException("Test")));
         final Throwable[] suppressed = throwable.getSuppressed();
-        assertEquals(suppressed.length, 1);
+        assertEquals(1, suppressed.length);
         assertTrue(suppressed[0] instanceof IllegalStateException);
-        assertEquals(suppressed[0].getMessage(), "Test");
+        assertEquals("Test", suppressed[0].getMessage());
     }
 
     @Test
@@ -309,7 +309,7 @@ public class EhCoreSupportTest {
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.trySuppressExceptions(throwable, () -> {
         });
-        assertEquals(throwable.getSuppressed().length, 0);
+        assertEquals(0, throwable.getSuppressed().length);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -328,7 +328,7 @@ public class EhCoreSupportTest {
         EhCoreSupport.trySuppressExceptions(
                 throwable,
                 () -> EhCoreSupport.rethrow(new IllegalStateException("Test")));
-        assertEquals(throwable.getSuppressed().length, 0);
+        assertEquals(0, throwable.getSuppressed().length);
     }
 
     @Test
@@ -336,7 +336,7 @@ public class EhCoreSupportTest {
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.suppressExceptionsOrFatal(throwable, () -> {
         });
-        assertEquals(throwable.getSuppressed().length, 0);
+        assertEquals(0, throwable.getSuppressed().length);
     }
 
     @Test(expected = FatalApplicationError.class)
@@ -351,7 +351,7 @@ public class EhCoreSupportTest {
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.tryCloseQuietly(
                 throwable, null /* closeable */, Closeable::close);
-        assertEquals(throwable.getSuppressed().length, 0);
+        assertEquals(0, throwable.getSuppressed().length);
     }
 
     @Test
@@ -360,8 +360,8 @@ public class EhCoreSupportTest {
         final Closeable closeable = () -> isClosed.setValue(Boolean.TRUE);
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.tryCloseQuietly(throwable, closeable, Closeable::close);
-        assertEquals(throwable.getSuppressed().length, 0);
-        assertEquals(isClosed.getValue(), Boolean.TRUE);
+        assertEquals(0, throwable.getSuppressed().length);
+        assertEquals(Boolean.TRUE, isClosed.getValue());
     }
 
     @Test
@@ -374,10 +374,10 @@ public class EhCoreSupportTest {
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.tryCloseQuietly(throwable, closeable, Closeable::close);
         final Throwable[] suppressed = throwable.getSuppressed();
-        assertEquals(suppressed.length, 1);
+        assertEquals(1, suppressed.length);
         assertTrue(suppressed[0] instanceof IllegalStateException);
-        assertEquals(suppressed[0].getMessage(), "Test");
-        assertEquals(isCloseAttempted.getValue(), Boolean.TRUE);
+        assertEquals("Test", suppressed[0].getMessage());
+        assertEquals(Boolean.TRUE, isCloseAttempted.getValue());
     }
 
     @Test
@@ -388,7 +388,7 @@ public class EhCoreSupportTest {
                 null /* throwable */,
                 closeable,
                 Closeable::close);
-        assertEquals(isClosed.getValue(), Boolean.TRUE);
+        assertEquals(Boolean.TRUE, isClosed.getValue());
     }
 
     @Test(expected = FatalApplicationError.class)
@@ -410,8 +410,8 @@ public class EhCoreSupportTest {
         final Closeable closeable = () -> isClosed.setValue(Boolean.TRUE);
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.tryCloseQuietly(throwable, closeable);
-        assertEquals(throwable.getSuppressed().length, 0);
-        assertEquals(isClosed.getValue(), Boolean.TRUE);
+        assertEquals(0, throwable.getSuppressed().length);
+        assertEquals(Boolean.TRUE, isClosed.getValue());
     }
 
     @Test
@@ -424,10 +424,10 @@ public class EhCoreSupportTest {
         final Throwable throwable = new IllegalArgumentException("Main exception");
         EhCoreSupport.tryCloseQuietly(throwable, closeable);
         final Throwable[] suppressed = throwable.getSuppressed();
-        assertEquals(suppressed.length, 1);
+        assertEquals(1, suppressed.length);
         assertTrue(suppressed[0] instanceof IllegalStateException);
-        assertEquals(suppressed[0].getMessage(), "Test");
-        assertEquals(isCloseAttempted.getValue(), Boolean.TRUE);
+        assertEquals("Test", suppressed[0].getMessage());
+        assertEquals(Boolean.TRUE, isCloseAttempted.getValue());
     }
 
     @Test
@@ -435,7 +435,7 @@ public class EhCoreSupportTest {
         final MutableObject<Boolean> isClosed = new MutableObject<>(Boolean.FALSE);
         final Closeable closeable = () -> isClosed.setValue(Boolean.TRUE);
         EhCoreSupport.closeQuietlyOrException(null /* throwable */, closeable);
-        assertEquals(isClosed.getValue(), Boolean.TRUE);
+        assertEquals(Boolean.TRUE, isClosed.getValue());
     }
 
     @Test
@@ -475,7 +475,7 @@ public class EhCoreSupportTest {
 
             final Thread.UncaughtExceptionHandler newHandler = (thread, exception) -> {
                 assertSame(exception.getClass(), IllegalStateException.class);
-                assertSame(exception.getMessage(), message);
+                assertSame(message, exception.getMessage());
                 invoked.setValue(Boolean.TRUE);
             };
 
@@ -488,7 +488,7 @@ public class EhCoreSupportTest {
                 thread.join();
             });
 
-            assertEquals(invoked.getValue(), Boolean.TRUE);
+            assertEquals(Boolean.TRUE, invoked.getValue());
 
             assertSame(newHandler, EhCoreSupport.getUncaughtHandler());
             EhCoreSupport.setUncaughtHandler(defaultUncaughtHandler);
