@@ -408,9 +408,6 @@ class EhCoreSupport {
      * @param uncaughtHandler The new Handler to be used as the default UncaughtExceptionHandler.
      */
     public static void setUncaughtHandler(final Thread.UncaughtExceptionHandler uncaughtHandler) {
-        final Thread.UncaughtExceptionHandler newHandler = (null == uncaughtHandler ? defaultUncaughtHandler : uncaughtHandler);
-        EhCoreSupport.uncaughtHandler = newHandler;
-        Thread.setDefaultUncaughtExceptionHandler(newHandler);
-        Thread.currentThread().setUncaughtExceptionHandler(newHandler);
+        EhCoreSupport.uncaughtHandler = (null == uncaughtHandler ? defaultUncaughtHandler : uncaughtHandler);
     }
 }
