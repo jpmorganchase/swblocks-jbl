@@ -404,6 +404,8 @@ class EhCoreSupport {
     /**
      * Sets new uncaught exception handler. Typically it is expected to execute only very simple and safe code and
      * then terminate the VM and if null it provided it installs the default such {@link #getDefaultUncaughtHandler()}
+     *
+     * @param uncaughtHandler The new Handler to be used as the default UncaughtExceptionHandler.
      */
     public static void setUncaughtHandler(final Thread.UncaughtExceptionHandler uncaughtHandler) {
         EhCoreSupport.uncaughtHandler = (null == uncaughtHandler ? defaultUncaughtHandler : uncaughtHandler);
