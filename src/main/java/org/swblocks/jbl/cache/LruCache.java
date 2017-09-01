@@ -28,7 +28,7 @@ import java.util.Map;
  *     final int initialCapacity = 10;
  *     final int maximumEntries = 20;
  *
- *     final Map&lt;DateRange, Object&gt; cache =
+ *     final Map&lt;Range, Object&gt; cache =
  *          Collections.synchronizedMap(new LruCache(initialCapacity, maximumCapacity, 0.75F));
  * </pre></blockquote>
  *
