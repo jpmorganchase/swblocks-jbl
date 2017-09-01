@@ -21,7 +21,7 @@ import java.time.Period;
 import java.util.LinkedHashMap;
 
 import org.junit.Test;
-import org.swblocks.jbl.util.DateRange;
+import org.swblocks.jbl.util.Range;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,24 +31,24 @@ import static org.junit.Assert.assertTrue;
  * Test class for {@link LruCache}.
  */
 public class LruCacheTest {
-    private final LruCache<DateRange, DateRange> cache = getLruCache(1, 2, 0.75f);
+    private final LruCache<Range<Instant>, Range<Instant>> cache = getLruCache(1, 2, 0.75f);
 
     @Test
     public void removesOldestEntry() {
         final Instant now = Instant.now();
 
-        final DateRange rangeOne = new DateRange(now, now.plus(Period.ofWeeks(1)));
+        final Range<Instant> rangeOne = new Range<>(now, now.plus(Period.ofWeeks(1)));
         this.cache.putIfAbsent(rangeOne, rangeOne);
         assertTrue(this.cache.containsKey(rangeOne));
 
-        final DateRange rangeTwo = new DateRange(now.plus(Period.ofWeeks(1)), now.plus(Period.ofWeeks(2)));
+        final Range<Instant> rangeTwo = new Range<>(now.plus(Period.ofWeeks(1)), now.plus(Period.ofWeeks(2)));
         this.cache.putIfAbsent(rangeTwo, rangeTwo);
         assertTrue(this.cache.containsKey(rangeOne));
         assertTrue(this.cache.containsKey(rangeTwo));
 
         this.cache.get(rangeTwo);
 
-        final DateRange rangeThree = new DateRange(now.plus(Period.ofWeeks(2)), now.plus(Period.ofWeeks(3)));
+        final Range<Instant> rangeThree = new Range<>(now.plus(Period.ofWeeks(2)), now.plus(Period.ofWeeks(3)));
         this.cache.putIfAbsent(rangeThree, rangeThree);
 
         assertFalse(this.cache.containsKey(rangeOne));
@@ -58,8 +58,8 @@ public class LruCacheTest {
 
     @Test
     public void equalsWorks() {
-        final LruCache<DateRange, DateRange> thisCache = getLruCache(1, 2, 0.75f);
-        LruCache<DateRange, DateRange> otherCache = getLruCache(1, 2, 0.75f);
+        final LruCache<Range<Instant>, Range<Instant>> thisCache = getLruCache(1, 2, 0.75f);
+        LruCache<Range<Instant>, Range<Instant>> otherCache = getLruCache(1, 2, 0.75f);
         assertTrue(thisCache.equals(otherCache));
 
         otherCache = getLruCache(1, 5, 0.75f);
@@ -71,15 +71,16 @@ public class LruCacheTest {
 
     @Test
     public void hashCodeWorks() {
-        final LruCache<DateRange, DateRange> thisCache = getLruCache(1, 2, 0.75f);
-        LruCache<DateRange, DateRange> other = getLruCache(1, 2, 0.75f);
+        final LruCache<Range<Instant>, Range<Instant>> thisCache = getLruCache(1, 2, 0.75f);
+        LruCache<Range<Instant>, Range<Instant>> other = getLruCache(1, 2, 0.75f);
         assertEquals(thisCache.hashCode(), other.hashCode());
 
         other = getLruCache(1, 5, 0.75f);
         assertFalse(thisCache.hashCode() == other.hashCode());
     }
 
-    private LruCache getLruCache(final int initialCapacity, final int maximumCapacity, final float loadFactor) {
+    private LruCache<Range<Instant>, Range<Instant>> getLruCache(final int initialCapacity, final int maximumCapacity,
+                                                                 final float loadFactor) {
         return LruCache.getCache(initialCapacity, maximumCapacity, loadFactor);
     }
 }

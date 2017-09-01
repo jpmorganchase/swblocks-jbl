@@ -139,6 +139,9 @@ public class DefaultThreadPool implements ThreadPool {
 
     /**
      * See documentation for {@link ThreadPool#getInstance(ThreadPoolId)}.
+     *
+     * @param threadPoolId The thread pool id of the global instance requested
+     * @return Thread pool instance
      */
     public static ThreadPool getInstance(final ThreadPoolId threadPoolId) {
         return EhSupport.propagateFn(() -> {

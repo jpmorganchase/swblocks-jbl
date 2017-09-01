@@ -16,31 +16,37 @@
 
 package org.swblocks.jbl.util;
 
-import java.time.Instant;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 /**
- * Class containing immutable dates defining the start and finish times of a date range.
+ * Generic class for supporting a range of {@link Comparable} objects.
  */
-public class DateRange {
-    public static final BiPredicate<DateRange, Instant> RANGE_CHECK = (range, time) ->
-            time.compareTo(range.getStart()) >= 0 && time.compareTo(range.getFinish()) < 0;
+public class Range<T extends Comparable<? super T>> implements Predicate<T> {
+    @SuppressWarnings("unchecked")
+    public static final BiPredicate<Range, Comparable> RANGE_CHECK = (range, test) ->
+            test.compareTo(range.getStart()) >= 0 && test.compareTo(range.getFinish()) < 0;
 
-    private final Instant start;
-    private final Instant finish;
+    private T start;
+    private T finish;
 
-    public DateRange(final Instant start, final Instant finish) {
+    public Range(T start, T finish) {
         this.start = start;
         this.finish = finish;
     }
 
-    public Instant getStart() {
-        return this.start;
+    @Override
+    public boolean test(final T value) {
+        return value.compareTo(getStart()) >= 0 && value.compareTo(getFinish()) < 0;
     }
 
-    public Instant getFinish() {
-        return this.finish;
+    public T getStart() {
+        return start;
+    }
+
+    public T getFinish() {
+        return finish;
     }
 
     @Override
@@ -52,7 +58,7 @@ public class DateRange {
             return false;
         }
         if (this.getClass() == obj.getClass()) {
-            final DateRange other = (DateRange) obj;
+            final Range other = (Range) obj;
             return Objects.equals(this.getStart(), other.getStart()) &&
                     Objects.equals(this.getFinish(), other.getFinish());
         }
