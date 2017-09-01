@@ -18,6 +18,7 @@ package org.swblocks.jbl.util;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -28,9 +29,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test cases for {@link Range}.
  */
-public class RangeInstantTest {
+public class RangeTest {
     @Test
-    public void testEquals() {
+    public void testInstanceEquals() {
         final Instant start = Instant.now().minus(5, ChronoUnit.DAYS);
         final Instant end = Instant.now().plus(5, ChronoUnit.DAYS);
 
@@ -56,13 +57,41 @@ public class RangeInstantTest {
     }
 
     @Test
-    public void testRangeCheck() {
+    public void testInstanceCheck() {
         final Instant now = Instant.now();
         final Instant start = now.minus(5, ChronoUnit.DAYS);
         final Instant end = now.plus(5, ChronoUnit.DAYS);
 
         final Range<Instant> instantRange = new Range<>(start, end);
         assertTrue(Range.RANGE_CHECK.test(instantRange, now));
+        assertTrue(Range.RANGE_CHECK.test(instantRange, start));
+
+        // End date is not considered part of the range.
+        assertFalse(Range.RANGE_CHECK.test(instantRange, end));
+    }
+
+    @Test
+    public void testLongCheck() {
+        final Random random = new Random();
+        final Long start = (long) random.nextInt(Integer.MAX_VALUE);
+        final Long end = start + random.nextInt(Integer.MAX_VALUE - start.intValue());
+
+        final Range<Long> instantRange = new Range<>(start, end);
+        assertTrue(Range.RANGE_CHECK.test(instantRange, start + 1));
+        assertTrue(Range.RANGE_CHECK.test(instantRange, start));
+
+        // End date is not considered part of the range.
+        assertFalse(Range.RANGE_CHECK.test(instantRange, end));
+    }
+
+    @Test
+    public void testDoubleCheck() {
+        final Random random = new Random();
+        final Double start = random.nextDouble();
+        final Double end = start + Math.abs(random.nextDouble());
+
+        final Range<Double> instantRange = new Range<>(start, end);
+        assertTrue(Range.RANGE_CHECK.test(instantRange, start + Double.MIN_VALUE));
         assertTrue(Range.RANGE_CHECK.test(instantRange, start));
 
         // End date is not considered part of the range.
