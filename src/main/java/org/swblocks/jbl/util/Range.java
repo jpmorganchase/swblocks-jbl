@@ -28,10 +28,10 @@ public class Range<T extends Comparable<? super T>> implements Predicate<T> {
     public static final BiPredicate<Range, Comparable> RANGE_CHECK = (range, test) ->
             test.compareTo(range.getStart()) >= 0 && test.compareTo(range.getFinish()) < 0;
 
-    private T start;
-    private T finish;
+    private final T start;
+    private final T finish;
 
-    public Range(T start, T finish) {
+    public Range(final T start, final T finish) {
         this.start = start;
         this.finish = finish;
     }
