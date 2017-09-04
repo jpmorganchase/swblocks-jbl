@@ -190,11 +190,11 @@ public final class Retrier {
 
             for (int i = 0; i < numberOfRetries; i++) {
                 result = action.get();
-                if (!result.isSuccess() && shouldRetry.test(result)) {
+                if (result.isSuccess()) {
+                    return result;
+                } else if (shouldRetry.test(result)) {
                     EhSupport.propagate(() -> Thread.sleep(sleepTimes.next()));
-                    continue;
                 }
-                return result;
             }
 
             return result;
