@@ -38,8 +38,7 @@ public class JblTestClassUtils {
     }
 
     /**
-     * Asserts that the constructor of a Class is private.
-     *
+     * Asserts that the constructor of a Class is private
      * <p>To be used with unit testing.
      *
      * @param clazz Class to test.
@@ -116,7 +115,8 @@ public class JblTestClassUtils {
                 final String setterName = "set" + capitalisedProperty;
                 bean.getClass().getMethod(setterName, classType).invoke(bean, exampleValue);
 
-                final String getterName = "get" + capitalisedProperty;
+                String prefix = classType.equals(boolean.class) || classType.equals(Boolean.class) ? "is" : "get";
+                final String getterName = prefix + capitalisedProperty;
                 final Object value = bean.getClass().getMethod(getterName).invoke(bean);
                 EhSupport.ensure(exampleValue.equals(value), "Constructor broken for property %s", property);
             }

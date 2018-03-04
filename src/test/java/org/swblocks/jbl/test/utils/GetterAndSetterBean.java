@@ -21,6 +21,7 @@ package org.swblocks.jbl.test.utils;
  */
 public class GetterAndSetterBean {
     private String name;
+    private boolean done;
 
     public String getName() {
         return this.name;
@@ -28,5 +29,13 @@ public class GetterAndSetterBean {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
     }
 }

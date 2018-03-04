@@ -67,9 +67,13 @@ public class JblTestClassUtilsTest {
 
         final Map<String, Object> injectedValues = new HashMap<>();
         injectedValues.put("name", "Test");
+        injectedValues.put("done", true);
+
+        final Map<String, Class> typeOverrides = new HashMap<>();
+        typeOverrides.put("done", boolean.class);
 
         Assert.assertTrue(JblTestClassUtils.assertSettersAndGettersCorrect(injectedValues, bean,
-                Collections.emptyMap()));
+                typeOverrides));
     }
 
     @Test(expected = IllegalArgumentException.class)
